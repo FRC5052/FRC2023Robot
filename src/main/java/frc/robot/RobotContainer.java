@@ -4,10 +4,14 @@
 
 package frc.robot;
 
+import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.XboxController;
 import frc.robot.commands.ExampleCommand;
+import frc.robot.commands.TelopDriveCommand;
+import frc.robot.motor.MotorGroup;
 import frc.robot.subsystems.ExampleSubsystem;
+import frc.robot.subsystems.TankDriveSubsystem;
 import edu.wpi.first.wpilibj2.command.Command;
 
 /**
@@ -17,15 +21,24 @@ import edu.wpi.first.wpilibj2.command.Command;
  * subsystems, commands, and button mappings) should be declared here.
  */
 public class RobotContainer {
-  // The robot's subsystems and commands are defined here...
-  private final ExampleSubsystem m_exampleSubsystem = new ExampleSubsystem();
+  public static RobotContainer inst = null;
 
-  private final ExampleCommand m_autoCommand = new ExampleCommand(m_exampleSubsystem);
+  public final XboxController controller;
+
+  public final TelopDriveCommand telopDriveCommand;
+
+  public final TankDriveSubsystem tankDriveSubsystem;
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
+    if (RobotContainer.inst == null) RobotContainer.inst = this;
+    this.controller = new XboxController(0);
+
+    this.telopDriveCommand = new TelopDriveCommand();
+
+    this.tankDriveSubsystem = new TankDriveSubsystem(new MotorGroup(Constants.leftLeaderID), new MotorGroup(Constants.rightLeaderID), new PIDController(0.4, 0.3, 0.0));
     // Configure the button bindings
-    configureButtonBindings();
+    this.configureButtonBindings();
   }
 
   /**
@@ -34,7 +47,9 @@ public class RobotContainer {
    * edu.wpi.first.wpilibj.Joystick} or {@link XboxController}), and then passing it to a {@link
    * edu.wpi.first.wpilibj2.command.button.JoystickButton}.
    */
-  private void configureButtonBindings() {}
+  private void configureButtonBindings() {
+
+  }
 
   /**
    * Use this to pass the autonomous command to the main {@link Robot} class.
@@ -42,7 +57,10 @@ public class RobotContainer {
    * @return the command to run in autonomous
    */
   public Command getAutonomousCommand() {
-    // An ExampleCommand will run in autonomous
-    return m_autoCommand;
+    return null;
+  }
+
+  public Command getTeleopCommand() {
+    return this.telopDriveCommand;
   }
 }
