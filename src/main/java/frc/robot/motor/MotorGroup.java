@@ -3,6 +3,7 @@ package frc.robot.motor;
 import java.util.Arrays;
 
 import com.revrobotics.CANSparkMax;
+import com.revrobotics.CANSparkMax.IdleMode;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
 public class MotorGroup {
@@ -32,7 +33,14 @@ public class MotorGroup {
         for (CANSparkMax follower : this.followers) {
             follower.setInverted(inverted);
         }
-    } 
+    }
+
+    public void setIdleMode(IdleMode mode) {
+        this.leader.setIdleMode(mode);
+        for (CANSparkMax follower : this.followers) {
+            follower.setIdleMode(mode);
+        }
+    }
 
     public void set(double value) {
         this.leader.set(value);

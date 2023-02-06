@@ -14,8 +14,14 @@ package frc.robot;
  */
 public final class Constants {
 
-    public static final boolean useAlternateControls = false;
+    public static final boolean useAlternateControls = true;
 
-    public static final int leftLeaderID = 0;
-    public static final int rightLeaderID = 1;
+    public static final int leftLeaderID = 1;
+    public static final int leftFollowerID = 4;
+    public static final int rightLeaderID = 3;
+    public static final int rightFollowerID = 2;
+
+    public static final int armMotorID = 5;
+    public static final int[] armEncoderPorts = {0, 1};
+    public static final int armLimSwitchPort = 4;
 }

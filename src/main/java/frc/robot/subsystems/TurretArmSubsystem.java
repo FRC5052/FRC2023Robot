@@ -4,11 +4,24 @@
 
 package frc.robot.subsystems;
 
+import com.revrobotics.CANSparkMax;
+
+import edu.wpi.first.wpilibj.DigitalInput;
+import edu.wpi.first.wpilibj.Encoder;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class TurretArmSubsystem extends SubsystemBase {
+  public final CANSparkMax armMotor;
+  public final Encoder armEncoder;
+  public final DigitalInput armLimSwitch;
+
   /** Creates a new ExampleSubsystem. */
-  public TurretArmSubsystem() {}
+  public TurretArmSubsystem(CANSparkMax armMotor, Encoder armEncoder, DigitalInput armLimSwitch) {
+    this.armMotor = armMotor;
+    this.armEncoder = armEncoder;
+    this.armLimSwitch = armLimSwitch;
+    this.armEncoder.reset();
+  }
 
   @Override
   public void periodic() {
