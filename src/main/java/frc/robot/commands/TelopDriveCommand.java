@@ -4,19 +4,19 @@
 
 package frc.robot.commands;
 
-import frc.robot.Constants;
-import frc.robot.RobotContainer;
-import edu.wpi.first.math.MathUtil;
+import com.revrobotics.CANSparkMax.IdleMode;
+
 import edu.wpi.first.math.controller.PIDController;
-import edu.wpi.first.wpilibj.XboxController;
-import edu.wpi.first.wpilibj.GenericHID.RumbleType;
 import edu.wpi.first.wpilibj2.command.CommandBase;
+import frc.robot.RobotContainer;
 
 /** An example command that uses an example subsystem. */
 public class TelopDriveCommand extends CommandBase {
   private PIDController pidController;
   private double lastSpeed, lastTurn;
   private boolean armZeroed;
+  private boolean flag;
+  private Thread musicThread;
   /**
    * Creates a new TelopDriveCommand.
    */
@@ -26,6 +26,7 @@ public class TelopDriveCommand extends CommandBase {
     this.addRequirements(RobotContainer.inst.turretArmSubsystem);
     this.pidController = pidController;
     this.armZeroed = false;
+    RobotContainer.inst.turretArmSubsystem.armMotor.setIdleMode(IdleMode.kCoast);
   }
 
   // Called every time the scheduler runs while the command is scheduled.
@@ -50,24 +51,33 @@ public class TelopDriveCommand extends CommandBase {
     // } else {
     //   RobotContainer.inst.controller.setRumble(RumbleType.kBothRumble, 0.0);
     // }
-    System.out.printf("Encoder & limit switch value: %f, %b\n", RobotContainer.inst.turretArmSubsystem.armEncoder.getDistance(), RobotContainer.inst.turretArmSubsystem.armLimSwitch.get());
-    if (!this.armZeroed) {
-      if (!RobotContainer.inst.turretArmSubsystem.armLimSwitch.get()) {
-        RobotContainer.inst.turretArmSubsystem.armMotor.stopMotor();
-        RobotContainer.inst.turretArmSubsystem.armEncoder.reset();
-        this.armZeroed = true;
-      } else {
-        RobotContainer.inst.turretArmSubsystem.armMotor.set(0.1);
-      }
+
+    if(RobotContainer.inst.controller.getLeftBumper() && !RobotContainer.inst.controller.getRightBumper()) {
+      RobotContainer.inst.turretPivotSubsystem.turnCounterClockwise();
+    } else if(RobotContainer.inst.controller.getRightBumper() && !RobotContainer.inst.controller.getLeftBumper()) {
+      RobotContainer.inst.turretPivotSubsystem.turnClockwise();
     } else {
-      if (RobotContainer.inst.controller.getLeftBumper() && !RobotContainer.inst.controller.getRightBumper() && RobotContainer.inst.turretArmSubsystem.armLimSwitch.get()) {
-        if (S) RobotContainer.inst.turretArmSubsystem.armMotor.set(0.1);
-      } else if (RobotContainer.inst.controller.getRightBumper() && !RobotContainer.inst.controller.getLeftBumper()) {
-        RobotContainer.inst.turretArmSubsystem.armMotor.set(-0.1);
-      } else {
-        RobotContainer.inst.turretArmSubsystem.armMotor.set(0.0);
-      }
+      RobotContainer.inst.turretPivotSubsystem.stopMotor();
     }
+
+    // System.out.printf("Encoder & limit switch value: %f, %b\n", RobotContainer.inst.turretArmSubsystem.armEncoder.getDistance(), RobotContainer.inst.turretArmSubsystem.armLimSwitch.get());
+    // if (!this.armZeroed) {
+    //   if (!RobotContainer.inst.turretArmSubsystem.armLimSwitch.get()) {
+    //     RobotContainer.inst.turretArmSubsystem.armMotor.stopMotor();
+    //     RobotContainer.inst.turretArmSubsystem.armEncoder.reset();
+    //     this.armZeroed = true;
+    //   } else {
+    //     RobotContainer.inst.turretArmSubsystem.armMotor.set(0.1);
+    //   }
+    // } else {
+    //  if (RobotContainer.inst.controller.getLeftBumper() && !RobotContainer.inst.controller.getRightBumper() && RobotContainer.inst.turretArmSubsystem.armLimSwitch.get()) {
+    //    RobotContainer.inst.turretArmSubsystem.armMotor.set(0.1);
+    //  } else if (RobotContainer.inst.controller.getRightBumper() && !RobotContainer.inst.controller.getLeftBumper()) {
+    //    RobotContainer.inst.turretArmSubsystem.armMotor.set(-0.1);
+    //  } else {
+    //    RobotContainer.inst.turretArmSubsystem.armMotor.set(0.0);
+    //  }
+    // }
   }
 
 }
