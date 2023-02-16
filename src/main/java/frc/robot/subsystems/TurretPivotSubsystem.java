@@ -18,7 +18,7 @@ public class TurretPivotSubsystem extends SubsystemBase {
     public void turnCounterClockwise() {
         this.turretMotor.set(-1.0);
     }
-
+ 
     public void stopMotor() {
         this.turretMotor.stopMotor();
     }

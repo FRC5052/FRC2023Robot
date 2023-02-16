@@ -10,17 +10,18 @@ import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.wpilibj.DigitalInput;
+import edu.wpi.first.wpilibj.DigitalSource;
+import edu.wpi.first.wpilibj.DutyCycle;
+import edu.wpi.first.wpilibj.DutyCycleEncoder;
 import edu.wpi.first.wpilibj.Encoder;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.XboxController;
-import frc.robot.commands.ExampleCommand;
 import frc.robot.commands.TelopDriveCommand;
 import frc.robot.motor.MotorGroup;
-import frc.robot.subsystems.ExampleSubsystem;
 import frc.robot.subsystems.TankDriveSubsystem;
 import frc.robot.subsystems.TurretArmSubsystem;
+import frc.robot.subsystems.TurretPivotSubsystem;
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.InstantCommand;
 
 /**
  * This class is where the bulk of the robot should be declared. Since Command-based is a
@@ -29,7 +30,8 @@ import edu.wpi.first.wpilibj2.command.InstantCommand;
  * subsystems, commands, and button mappings) should be declared here.
  */
 public class RobotContainer {
-  public static RobotContainer inst = null;
+  // The primary instance of the robot (technically the last one initialized).
+  public static RobotContainer robot = null;
 
   public final XboxController controller;
 
@@ -37,29 +39,41 @@ public class RobotContainer {
 
   public final TankDriveSubsystem tankDriveSubsystem;
   public final TurretArmSubsystem turretArmSubsystem;
+  public final TurretPivotSubsystem turretPivotSubsystem;
+
+  public static RobotContainer getRobot() {
+    return RobotContainer.robot;
+  }
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
-    if (RobotContainer.inst == null) RobotContainer.inst = this;
+    if (RobotContainer.robot == null) RobotContainer.robot = this;
     this.controller = new XboxController(0);
 
-    this.tankDriveSubsystem = null;
-    // this.tankDriveSubsystem = new TankDriveSubsystem(
-    //   new MotorGroup(Constants.leftLeaderID, Constants.leftFollowerID), 
-    //   new MotorGroup(Constants.rightLeaderID, Constants.rightFollowerID), 
-    //   new PIDController(0.4, 0.3, 0.0), // Output PID
-    //   new AHRS()
-    // );
-
-    // this.turretArmSubsystem = null;
-    this.turretArmSubsystem = new TurretArmSubsystem(
-      new CANSparkMax(Constants.armMotorID, MotorType.kBrushless), //new CANSparkMax(Constants.armMotorID, MotorType.kBrushless),
-      new Encoder(Constants.armEncoderPorts[0], Constants.armEncoderPorts[1]),
-      new DigitalInput(Constants.armLimSwitchPort)
+    // this.tankDriveSubsystem = null;
+    this.tankDriveSubsystem = new TankDriveSubsystem(
+      new MotorGroup(Constants.leftLeaderID, Constants.leftFollowerID), 
+      new MotorGroup(Constants.rightLeaderID, Constants.rightFollowerID), 
+      new PIDController(0.6, 0.5, 0.0), // Output PID
+      new AHRS()
     );
 
+    this.turretArmSubsystem = null;
+    // this.turretArmSubsystem = new TurretArmSubsystem(
+    //   new CANSparkMax(Constants.armMotorID, MotorType.kBrushless), //new CANSparkMax(Constants.armMotorID, MotorType.kBrushless),
+    //   new DutyCycleEncoder(new DutyCycle(new DigitalSource() {
+        
+    //   })),
+    //   new DigitalInput(Constants.armLimSwitchPort)
+    // );
+
+    this.turretPivotSubsystem = null;
+    // this.turretPivotSubsystem = new TurretPivotSubsystem(
+    //   new CANSparkMax(Constants.pivotMotorId, MotorType.kBrushless)
+    // );
+
     this.telopDriveCommand = new TelopDriveCommand(
-      new PIDController(0.6, 0.3, 0.0) // Input PID
+      new PIDController(0.6, 0.5, 0.0) // Input PID
     );
 
     // Configure the button bindings

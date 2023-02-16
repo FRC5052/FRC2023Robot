@@ -22,17 +22,36 @@ public class TankDriveSubsystem extends SubsystemBase {
       this.rightWheels = rightWheels;
       this.leftWheels.setIdleMode(IdleMode.kBrake);
       this.rightWheels.setIdleMode(IdleMode.kBrake);
-      this.rightWheels.setInverted(true);
+      this.leftWheels.setInverted(true);
       this.pidController = pidController;
       this.navX = navX;
       this.navX.calibrate();
   }
 
+  public void setSpeeds(double left, double right) {
+      this.leftSpeed = left;
+      this.rightSpeed = right;
+  }
+
   @Override
   public void periodic() {
-      this.leftWheels.set(this.pidController.calculate(this.leftWheels.get(), leftSpeed));
-      this.rightWheels.set(this.pidController.calculate(this.rightWheels.get(), rightSpeed));
+      this.smartPID(leftWheels, leftSpeed);
+      this.smartPID(rightWheels, rightSpeed);
       // this.leftWheels.set(leftSpeed);
       // this.rightWheels.set(rightSpeed);
+  }
+
+  private void smartPID(MotorGroup motorGroup, double setPoint) {
+    if (shouldBrake(motorGroup.get(), setPoint)) {
+        motorGroup.setIdleMode(IdleMode.kBrake);
+        motorGroup.set(setPoint);
+    } else {
+        motorGroup.setIdleMode(IdleMode.kCoast);
+        motorGroup.set(this.pidController.calculate(motorGroup.get(), setPoint));
+    }
+  }
+
+  private boolean shouldBrake(double current, double desired) {
+    return Math.abs(current) > Math.abs(desired) || Math.abs(current) > -Math.abs(desired);
   }
 }

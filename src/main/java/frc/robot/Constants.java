@@ -14,14 +14,28 @@ package frc.robot;
  */
 public final class Constants {
 
-    public static final boolean useAlternateControls = true;
+    // false for Rocket League controls, true for Arcade controls
+    public static final boolean useAlternateControls = false;
 
-    public static final int leftLeaderID = 1;
-    public static final int leftFollowerID = 4;
+    public static final int leftLeaderID = 2;
+    public static final int leftFollowerID = 1;
     public static final int rightLeaderID = 3;
-    public static final int rightFollowerID = 2;
+    public static final int rightFollowerID = 4;
 
     public static final int armMotorID = 5;
-    public static final int[] armEncoderPorts = {0, 1};
+    public static final int[] armEncoderPorts = {0, 1, 2, 3};
     public static final int armLimSwitchPort = 4;
+
+    public static final int pivotMotorId = 6;
+
+
+// stuff below is constants for Auton dont touch unless u know what ur doing 
+
+    // once the robot is put together we can calculate the info using SysID before and plug it in 
+    public static final double ksVolts = 0;
+    public static final double KvVoltSecondsPerMeter = 0;
+    public static final double kaVoltSecondsSquaredPerMeter = 0;
+    public static final double kPDriveVel = 0;
+
+
 }
