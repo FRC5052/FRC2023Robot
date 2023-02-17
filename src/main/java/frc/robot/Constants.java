@@ -4,6 +4,10 @@
 
 package frc.robot;
 
+import edu.wpi.first.math.kinematics.DifferentialDriveKinematics;
+import edu.wpi.first.math.util.Units;
+import edu.wpi.first.wpilibj.drive.DifferentialDrive;
+
 /**
  * The Constants class provides a convenient place for teams to hold robot-wide numerical or boolean
  * constants. This class should not be used for any other purpose. All constants should be declared
@@ -30,12 +34,29 @@ public final class Constants {
 
 
 // stuff below is constants for Auton dont touch unless u know what ur doing 
+// the "k" just means that it's a constant- something that doesnt change (ex. the length of 1ft will never change)
 
     // once the robot is put together we can calculate the info using SysID before and plug it in 
+
     public static final double ksVolts = 0;
     public static final double KvVoltSecondsPerMeter = 0;
     public static final double kaVoltSecondsSquaredPerMeter = 0;
     public static final double kPDriveVel = 0;
+
+    // this is just the horizontal distance between the front wheel and back wheel IN METERS (ex. the different from Front Left & Back Left)
+    // 11in --> meters
+    public static final double kTrackWidthMeters = Units.inchesToMeters(17.75);
+
+    public static final DifferentialDriveKinematics kDriveKinematics = new DifferentialDriveKinematics(kTrackWidthMeters);
+
+    // setting max velocity & acceleration
+    public static final double kMaxSpeedMetersPerSecond = 3;
+    public static final double kMaxAccelerationMetersPerSecondSquared = 3;
+
+
+    // baseline values for RAMSETE Folloer in meters/second
+    public static final double kRamseteB = 2;
+    public static final double kRamsateZeta = 0.7;
 
 
 }

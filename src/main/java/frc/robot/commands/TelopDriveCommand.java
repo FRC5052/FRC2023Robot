@@ -5,12 +5,15 @@
 package frc.robot.commands;
 
 import com.revrobotics.CANSparkMax.IdleMode;
+import edu.wpi.first.wpilibj.interfaces.Gyro;
 
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.wpilibj.GenericHID.RumbleType;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.Constants;
+import frc.robot.subsystems.TankDriveSubsystem;
+
 import static frc.robot.RobotContainer.robot;
 
 /** An example command that uses an example subsystem. */
@@ -46,11 +49,16 @@ public class TelopDriveCommand extends CommandBase {
       double rumbleDegreeMin = 4.0;
       robot.tankDriveSubsystem.leftSpeed = (speed + turn);
       robot.tankDriveSubsystem.rightSpeed = (speed - turn);
-    
+      robot.tankDriveSubsystem.navX.reset();
+
+    // this is showinng up red cause the Gyro class has different methods. Go to Tank Drive and Ctr + Click on the green "Gyro"
+
       if (Math.abs(robot.tankDriveSubsystem.navX.getRoll()) > rumbleDegreeMin) {
         robot.controller.setRumble(RumbleType.kBothRumble, Math.abs(robot.tankDriveSubsystem.navX.getRoll())/15.0);
+
       } else if (Math.abs(robot.tankDriveSubsystem.navX.getPitch()) > rumbleDegreeMin) {
         robot.controller.setRumble(RumbleType.kBothRumble, Math.abs(robot.tankDriveSubsystem.navX.getPitch())/15.0);
+
       } else {
         robot.controller.setRumble(RumbleType.kBothRumble, 0.0);
       }
