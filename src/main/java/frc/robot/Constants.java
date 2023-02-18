@@ -58,5 +58,18 @@ public final class Constants {
     public static final double kRamseteB = 2;
     public static final double kRamsateZeta = 0.7;
 
+    public static final double kGearRatio = 5.12;
+    public static final double kWheelRadiusInches = 6;
 
+    //distance converter from ticks to meters
+    public static final double kLinearDistanceConversionFactor = (Units.inchesToMeters(1/(kGearRatio * 2 * Math.PI * Units.inchesToMeters(kWheelRadiusInches)) * 10));
+
+
+    // to convert ticks to degrees :
+    /*
+     *  degrees = ( ticks / TPR ) * 360
+     * 
+     *  to get a 90 degree turn, get 1/4th of whatever your total TPR is 
+     * 
+     */
 }

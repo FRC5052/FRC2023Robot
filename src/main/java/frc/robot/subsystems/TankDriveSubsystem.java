@@ -16,7 +16,9 @@ import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.kinematics.DifferentialDriveOdometry;
 import edu.wpi.first.wpilibj.interfaces.Gyro;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.Constants;
 import frc.robot.motor.MotorGroup;
 
 public class TankDriveSubsystem extends SubsystemBase {
@@ -36,9 +38,9 @@ public class TankDriveSubsystem extends SubsystemBase {
   private RelativeEncoder lEncoder;
   private RelativeEncoder rEncoder;
 
-
   /** Creates a new TankDriveSubsystem. */
-  public TankDriveSubsystem(MotorGroup leftWheels, MotorGroup rightWheels, PIDController pidController, AHRS navX) {
+  public TankDriveSubsystem(MotorGroup leftWheels, MotorGroup rightWheels, PIDController pidController, AHRS navX
+    ) {
       this.leftWheels = leftWheels;
       this.rightWheels = rightWheels;
       this.leftWheels.setIdleMode(IdleMode.kBrake);
@@ -50,8 +52,15 @@ public class TankDriveSubsystem extends SubsystemBase {
       lEncoder = leftLeader.getEncoder();
       rEncoder = rightLeader.getEncoder();
 
+      rEncoder.setPositionConversionFactor(Constants.kLinearDistanceConversionFactor);
+      lEncoder.setPositionConversionFactor(Constants.kLinearDistanceConversionFactor);
+      rEncoder.setVelocityConversionFactor(Constants.kLinearDistanceConversionFactor/60);
+      lEncoder.setVelocityConversionFactor(Constants.kLinearDistanceConversionFactor/60);
+
       this.navX = navX;
+      navX.reset();
       this.navX.calibrate();
+      resetEncoders();
 
       m_odometry = new DifferentialDriveOdometry(navX.getRotation2d(), this.lEncoder.getPosition(), this.rEncoder.getPosition());
 
@@ -59,10 +68,50 @@ public class TankDriveSubsystem extends SubsystemBase {
 
   }
 
+  public void setBreakMode(MotorGroup leftWheels, MotorGroup rightWheels){
+    leftWheels.setIdleMode(IdleMode.kBrake);
+    rightWheels.setIdleMode(IdleMode.kBrake);
+  }
+
+  public void setCoastMode(MotorGroup leftWheels, MotorGroup rightWheels){
+    leftWheels.setIdleMode(IdleMode.kCoast);
+    rightWheels.setIdleMode(IdleMode.kCoast);
+  }
+
+  public void resetEncoders() {
+    rEncoder.setPosition(0);
+    lEncoder.setPosition(0);
+  }
+
+  public double getRightEncoderPosition() {
+    return rEncoder.getPosition();
+  }
+
+  public double getLeftEncoderPosition() {
+    return lEncoder.getPosition();
+  }
+
+  public double getRightEncoderVelocity() {
+    return lEncoder.getVelocity();
+  }
+
+  public double getLeftEncoderVelocity() {
+    return lEncoder.getVelocity();
+  }
+
+  public double getTurnRate(){
+    return -navX.getRate();
+  }
+
   public void setSpeeds(double left, double right) {
       this.leftSpeed = left;
       this.rightSpeed = right;
   }
+
+  public double getHeading() {
+    return this.navX.getRotation2d().getDegrees();
+  }
+  // might have to make this method static
 
   @Override
   public void periodic() {
@@ -70,6 +119,14 @@ public class TankDriveSubsystem extends SubsystemBase {
       this.smartPID(rightWheels, rightSpeed);
       // this.leftWheels.set(leftSpeed);
       // this.rightWheels.set(rightSpeed);
+
+      // for odometry
+
+      m_odometry.update(navX.getRotation2d(), lEncoder.getPosition(), rEncoder.getPosition());
+      SmartDashboard.putNumber("Left encoder value meters", getLeftEncoderPosition());
+      SmartDashboard.putNumber("Right encoder value meters", getRightEncoderPosition());
+      SmartDashboard.putNumber("Gyro heading", getHeading());
+      
   }
 
   private void smartPID(MotorGroup motorGroup, double setPoint) {
