@@ -20,6 +20,7 @@ import frc.robot.commands.TelopDriveCommand;
 import frc.robot.motor.MotorGroup;
 import frc.robot.subsystems.TankDriveSubsystem;
 import frc.robot.subsystems.TurretArmSubsystem;
+import frc.robot.subsystems.TurretClawSubsystem;
 import frc.robot.subsystems.TurretPivotSubsystem;
 import edu.wpi.first.wpilibj2.command.Command;
 
@@ -33,13 +34,15 @@ public class RobotContainer {
   // The primary instance of the robot (technically the last one initialized).
   public static RobotContainer robot = null;
 
-  public final XboxController controller;
+  public final XboxController driveController;
+  public final XboxController turretController;
 
   public final TelopDriveCommand telopDriveCommand;
 
   public final TankDriveSubsystem tankDriveSubsystem;
   public final TurretArmSubsystem turretArmSubsystem;
   public final TurretPivotSubsystem turretPivotSubsystem;
+  public final TurretClawSubsystem turretClawSubsystem;
 
   public static RobotContainer getRobot() {
     return RobotContainer.robot;
@@ -48,7 +51,8 @@ public class RobotContainer {
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
     if (RobotContainer.robot == null) RobotContainer.robot = this;
-    this.controller = new XboxController(0);
+    this.driveController = new XboxController(0);
+    this.turretController = new XboxController(1);
 
     // this.tankDriveSubsystem = null;
     this.tankDriveSubsystem = new TankDriveSubsystem(
@@ -58,19 +62,21 @@ public class RobotContainer {
       new AHRS()
     );
 
-    this.turretArmSubsystem = null;
-    // this.turretArmSubsystem = new TurretArmSubsystem(
-    //   new CANSparkMax(Constants.armMotorID, MotorType.kBrushless), //new CANSparkMax(Constants.armMotorID, MotorType.kBrushless),
-    //   new DutyCycleEncoder(new DutyCycle(new DigitalSource() {
-        
-    //   })),
-    //   new DigitalInput(Constants.armLimSwitchPort)
-    // );
+    // this.turretArmSubsystem = null;
+    this.turretArmSubsystem = new TurretArmSubsystem(
+      new CANSparkMax(Constants.armMotorID, MotorType.kBrushless), //new CANSparkMax(Constants.armMotorID, MotorType.kBrushless),
+      new DigitalInput(Constants.armLimSwitchPort)
+    );
 
-    this.turretPivotSubsystem = null;
-    // this.turretPivotSubsystem = new TurretPivotSubsystem(
-    //   new CANSparkMax(Constants.pivotMotorId, MotorType.kBrushless)
-    // );
+    // this.turretPivotSubsystem = null;
+    this.turretPivotSubsystem = new TurretPivotSubsystem(
+      new CANSparkMax(Constants.pivotMotorID, MotorType.kBrushless)
+    );
+
+    // this.turretClawSubsystem = null;
+    this.turretClawSubsystem = new TurretClawSubsystem(
+      new MotorGroup(Constants.clawLeaderID, Constants.clawFollowerID)
+    );
 
     this.telopDriveCommand = new TelopDriveCommand(
       new PIDController(0.6, 0.5, 0.0) // Input PID

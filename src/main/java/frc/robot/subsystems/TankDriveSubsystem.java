@@ -15,6 +15,7 @@ public class TankDriveSubsystem extends SubsystemBase {
   public final MotorGroup leftWheels, rightWheels;
   public final PIDController pidController;
   public final AHRS navX;
+  private final double initialHeading;
   public double leftSpeed = 0.0, rightSpeed = 0.0;
   /** Creates a new TankDriveSubsystem. */
   public TankDriveSubsystem(MotorGroup leftWheels, MotorGroup rightWheels, PIDController pidController, AHRS navX) {
@@ -26,6 +27,7 @@ public class TankDriveSubsystem extends SubsystemBase {
       this.pidController = pidController;
       this.navX = navX;
       this.navX.calibrate();
+      this.initialHeading = this.getHeading();
   }
 
   public void setSpeeds(double left, double right) {
@@ -35,14 +37,14 @@ public class TankDriveSubsystem extends SubsystemBase {
 
   @Override
   public void periodic() {
-      this.smartPID(leftWheels, leftSpeed);
-      this.smartPID(rightWheels, rightSpeed);
+      this.smartPID(this.leftWheels, this.leftSpeed);
+      this.smartPID(this.rightWheels, this.rightSpeed);
       // this.leftWheels.set(leftSpeed);
       // this.rightWheels.set(rightSpeed);
   }
 
   private void smartPID(MotorGroup motorGroup, double setPoint) {
-    if (shouldBrake(motorGroup.get(), setPoint)) {
+    if (!shouldBrake(boolNegate(motorGroup.get(), !motorGroup.leader.getInverted()), setPoint)) {
         motorGroup.setIdleMode(IdleMode.kBrake);
         motorGroup.set(setPoint);
     } else {
@@ -51,7 +53,20 @@ public class TankDriveSubsystem extends SubsystemBase {
     }
   }
 
-  private boolean shouldBrake(double current, double desired) {
+  public double getInitialHeading() {
+    return this.initialHeading;
+  }
+
+  public double getHeading() {
+    return (double) this.navX.getYaw();
+  }
+
+  private static boolean shouldBrake(double current, double desired) {
     return Math.abs(current) > Math.abs(desired) || Math.abs(current) > -Math.abs(desired);
+  }
+
+  // sign ? -x : x
+  private static double boolNegate(double x, boolean sign) {
+    return sign ? -x : x;
   }
 }

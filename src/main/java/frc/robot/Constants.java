@@ -4,6 +4,8 @@
 
 package frc.robot;
 
+import javax.swing.plaf.TreeUI;
+
 /**
  * The Constants class provides a convenient place for teams to hold robot-wide numerical or boolean
  * constants. This class should not be used for any other purpose. All constants should be declared
@@ -14,19 +16,21 @@ package frc.robot;
  */
 public final class Constants {
 
-    // false for Rocket League controls, true for Arcade controls
-    public static final boolean useAlternateControls = false;
+    public static final boolean useAlternateControls = false; // false for Rocket League controls, true for Arcade controls
 
     public static final int leftLeaderID = 2;
     public static final int leftFollowerID = 1;
     public static final int rightLeaderID = 3;
     public static final int rightFollowerID = 4;
 
-    public static final int armMotorID = 5;
+    public static final int armMotorID = 6;
     public static final int[] armEncoderPorts = {0, 1, 2, 3};
     public static final int armLimSwitchPort = 4;
 
-    public static final int pivotMotorId = 6;
+    public static final int pivotMotorID = 5;
+
+    public static final int clawLeaderID = 7;
+    public static final int clawFollowerID = 8;
 
 
 // stuff below is constants for Auton dont touch unless u know what ur doing 
