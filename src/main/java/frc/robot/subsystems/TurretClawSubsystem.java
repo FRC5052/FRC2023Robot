@@ -13,15 +13,14 @@ public class TurretClawSubsystem extends SubsystemBase {
 
   public TurretClawSubsystem(MotorGroup motors) {
     this.motors = motors;
-    this.motors.leader.setInverted(true);
   }
 
   public void openClaw() {
-    this.motors.set(0.01);
+    this.motors.set(0.05);
   }
 
   public void closeClaw() {
-    this.motors.set(-0.01);
+    this.motors.set(-0.05);
   }
 
   public void stopClaw() {

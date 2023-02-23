@@ -54,20 +54,20 @@ public class TurretPivotSubsystem extends SubsystemBase {
     @Override
     public void periodic() {
 
-        turretDegrees = (turretEncoder.getPosition()/140) * 360;
-        robotDifferenceHeading = (robot.tankDriveSubsystem.getInitialHeading() - robot.tankDriveSubsystem.getHeading()) + desiredHeadingOffset;
+        // turretDegrees = (turretEncoder.getPosition()/140) * 360;
+        // robotDifferenceHeading = (robot.tankDriveSubsystem.getInitialHeading() - robot.tankDriveSubsystem.getHeading()) + desiredHeadingOffset;
         
-        System.out.printf("Robot Difference Heading = %f\n", robotDifferenceHeading);
-        System.out.printf("turretDegrees = %f\n", turretDegrees);
+        // System.out.printf("Robot Difference Heading = %f\n", robotDifferenceHeading);
+        // System.out.printf("turretDegrees = %f\n", turretDegrees);
 
-        if (!(turretDegrees < robotDifferenceHeading+0.1)){
-            this.turretMotor.set(-0.2);
-        }else if (!(turretDegrees > robotDifferenceHeading-0.1)){
-            this.turretMotor.set(0.2);
-        }// if ((turretDegrees < robotDifferenceHeading+5) && (turretDegrees > robotDifferenceHeading-5)){
-        else {
-            this.turretMotor.set(0);
-        }
+        // if (!(turretDegrees < robotDifferenceHeading+0.1)){
+        //     this.turretMotor.set(-0.2);
+        // }else if (!(turretDegrees > robotDifferenceHeading-0.1)){
+        //     this.turretMotor.set(0.2);
+        // }// if ((turretDegrees < robotDifferenceHeading+5) && (turretDegrees > robotDifferenceHeading-5)){
+        // else {
+        //     this.turretMotor.set(0);
+        // }
     }
 
     public void stopTurning() {
