@@ -38,11 +38,11 @@ public class TurretArmSubsystem extends SubsystemBase {
   }
 
   public void moveDown() {
-    this.armMotor.set(0.1);
+    this.armMotor.set(0.5);
   }
 
   public void moveUp() {
-    this.armMotor.set(-0.1);
+    this.armMotor.set(-0.5);
   }
 
   public void stopMoving() {

@@ -29,14 +29,18 @@ public class TurretPivotSubsystem extends SubsystemBase {
         this.turretEncoder.setPosition(0);
     }
 
-    public void turnRight() {
-        // turretMotor.set((robot.turretController.getRightTriggerAxis())*0.5);
-        desiredHeadingOffset++;
+    public void turnRight(double amount) {
+        this.turretMotor.set(amount*0.5);
+        // desiredHeadingOffset += 0.5;
     }
 
-    public void turnLeft() {
-        //turretMotor.set((-robot.turretController.getLeftTriggerAxis())*0.5);
-        desiredHeadingOffset--;
+    public void turnLeft(double amount) {
+        this.turretMotor.set(-amount*0.5);
+        // desiredHeadingOffset -= 0.5;
+    }
+
+    public void turn0(){
+        desiredHeadingOffset = 0;
     }
 
     public void turn90(){
@@ -60,10 +64,10 @@ public class TurretPivotSubsystem extends SubsystemBase {
         // System.out.printf("Robot Difference Heading = %f\n", robotDifferenceHeading);
         // System.out.printf("turretDegrees = %f\n", turretDegrees);
 
-        // if (!(turretDegrees < robotDifferenceHeading+0.1)){
-        //     this.turretMotor.set(-0.2);
-        // }else if (!(turretDegrees > robotDifferenceHeading-0.1)){
-        //     this.turretMotor.set(0.2);
+        // if (!(turretDegrees < robotDifferenceHeading+2)){
+        //     this.turretMotor.set(-0.3);
+        // }else if (!(turretDegrees > robotDifferenceHeading-2)){
+        //     this.turretMotor.set(0.3);
         // }// if ((turretDegrees < robotDifferenceHeading+5) && (turretDegrees > robotDifferenceHeading-5)){
         // else {
         //     this.turretMotor.set(0);

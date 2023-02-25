@@ -74,13 +74,22 @@ public class TelopDriveCommand extends CommandBase {
     // Turret Pivot control code
     if (robot.turretPivotSubsystem != null) {
       if(robot.turretController.getLeftTriggerAxis() > 0.0) {
-        robot.turretPivotSubsystem.turnLeft();
+        robot.turretPivotSubsystem.turnLeft(robot.turretController.getLeftTriggerAxis());
       } else if(robot.turretController.getRightTriggerAxis() > 0.0) {
-        robot.turretPivotSubsystem.turnRight();
-      } 
-      // else {
-      //   robot.turretPivotSubsystem.stopTurning();
-      // }
+        robot.turretPivotSubsystem.turnRight(robot.turretController.getRightTriggerAxis());
+      } else {
+        robot.turretPivotSubsystem.stopTurning();
+      }
+
+      if(robot.turretController.getPOV() == 0){
+        robot.turretPivotSubsystem.turn0();
+      } else if (robot.turretController.getPOV() == 90){
+        robot.turretPivotSubsystem.turn90();
+      } else if (robot.turretController.getPOV() == 180){
+        robot.turretPivotSubsystem.turn180();
+      } else if (robot.turretController.getPOV() == 270){
+        robot.turretPivotSubsystem.turn270();
+      }
     }
     
     // Turret Arm control code

@@ -16,11 +16,11 @@ public class TurretClawSubsystem extends SubsystemBase {
   }
 
   public void openClaw() {
-    this.motors.set(0.05);
+    this.motors.set(0.1);
   }
 
   public void closeClaw() {
-    this.motors.set(-0.05);
+    this.motors.set(-0.1);
   }
 
   public void stopClaw() {
