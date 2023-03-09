@@ -25,6 +25,7 @@ public class TurretArmSubsystem extends SubsystemBase {
     this.armMotor = armMotor;
     this.armEncoder = armMotor.getEncoder();
     this.armLimSwitch = armLimSwitch;
+    this.armMotor.setIdleMode(IdleMode.kBrake);
   }
 
   // Make the arm return to home under its own weight
@@ -37,12 +38,14 @@ public class TurretArmSubsystem extends SubsystemBase {
     this.armMotor.setIdleMode(IdleMode.kBrake);
   }
 
-  public void moveDown() {
-    this.armMotor.set(0.5);
-  }
+  public boolean move(double amount) {
+    // if(armEncoder.getPosition() <= -147 && amount < 0) {
+    //   return false;
+    // }
 
-  public void moveUp() {
-    this.armMotor.set(-0.5);
+    this.armMotor.set(amount*0.5);
+
+    return true;
   }
 
   public void stopMoving() {
@@ -65,6 +68,7 @@ public class TurretArmSubsystem extends SubsystemBase {
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
+    // System.out.println("Arm position: " + armEncoder.getPosition());
   }
 
   @Override

@@ -29,30 +29,9 @@ public class TurretPivotSubsystem extends SubsystemBase {
         this.turretEncoder.setPosition(0);
     }
 
-    public void turnRight(double amount) {
-        this.turretMotor.set(amount*0.5);
+    public void turn(double amount) {
+        this.turretMotor.set(amount*0.25);
         // desiredHeadingOffset += 0.5;
-    }
-
-    public void turnLeft(double amount) {
-        this.turretMotor.set(-amount*0.5);
-        // desiredHeadingOffset -= 0.5;
-    }
-
-    public void turn0(){
-        desiredHeadingOffset = 0;
-    }
-
-    public void turn90(){
-        desiredHeadingOffset = 90;
-    }
-
-    public void turn180(){
-        desiredHeadingOffset = 180;
-    }
-    
-    public void turn270(){
-        desiredHeadingOffset = 270;
     }
 
     @Override

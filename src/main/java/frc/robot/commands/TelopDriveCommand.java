@@ -6,6 +6,12 @@ package frc.robot.commands;
 
 import com.revrobotics.CANSparkMax.IdleMode;
 
+import edu.wpi.first.cameraserver.CameraServer;
+import edu.wpi.first.cscore.CvSink;
+import edu.wpi.first.cscore.CvSource;
+import edu.wpi.first.cscore.MjpegServer;
+import edu.wpi.first.cscore.UsbCamera;
+import edu.wpi.first.cscore.VideoMode.PixelFormat;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.wpilibj.DriverStation;
@@ -14,6 +20,7 @@ import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.Constants;
 import static frc.robot.RobotContainer.robot;
 
+
 /** An example command that uses an example subsystem. */
 public class TelopDriveCommand extends CommandBase {
   private static double rumbleDegreeMin = 4.0;
@@ -21,6 +28,7 @@ public class TelopDriveCommand extends CommandBase {
   private double lastSpeed, lastTurn;
   private boolean armZeroed;
   private boolean tankDriveToggle;
+  private boolean brakeToggle;
   /**
    * Creates a new TelopDriveCommand.
    */
@@ -32,6 +40,9 @@ public class TelopDriveCommand extends CommandBase {
     this.pidController = pidController;
     this.armZeroed = true;
     this.tankDriveToggle = false;
+    this.brakeToggle = false;
+
+    CameraServer.startAutomaticCapture();
   }
 
   // Called every time the scheduler runs while the command is scheduled.
@@ -39,17 +50,18 @@ public class TelopDriveCommand extends CommandBase {
   public void execute() {
     // Tank Drive control code
     if (robot.tankDriveSubsystem != null) {
+      robot.tankDriveSubsystem.setIdleMode(null);
       // Checks the back/options button on the drive controller and if it is newly pressed this cycle, toggle between tank drive and rocket league/arcade drive
       if (robot.driveController.getBackButtonPressed()) this.tankDriveToggle = !this.tankDriveToggle;
       // Detects if in tank drive mode
       if (this.tankDriveToggle) { // Tank drive
         // Read controller inputs
-        double left = robot.driveController.getLeftY();
-        double right = robot.driveController.getRightY();
+        double left = robot.driveController.getLeftY() * 0.8;
+        double right = robot.driveController.getRightY() * 0.8;
         
         // Deadband 
-        left = MathUtil.applyDeadband(left, 0.1);
-        right = MathUtil.applyDeadband(right, 0.1);
+        left = MathUtil.applyDeadband(-left, 0.1);
+        right = MathUtil.applyDeadband(-right, 0.1);
 
         // Tell subsystem to set the motor speeds to the given values
         robot.tankDriveSubsystem.setSpeeds(left, right);
@@ -61,7 +73,7 @@ public class TelopDriveCommand extends CommandBase {
         turn = MathUtil.applyDeadband(turn, 0.1);
         robot.tankDriveSubsystem.setSpeeds((speed + turn), (speed - turn));
       }
-    
+      System.out.printf("Pitch: %f\n", robot.tankDriveSubsystem.navX.getPitch());
       if (Math.abs(robot.tankDriveSubsystem.navX.getRoll()) > rumbleDegreeMin) {
         robot.driveController.setRumble(RumbleType.kBothRumble, Math.abs(robot.tankDriveSubsystem.navX.getRoll())/15.0);
       } else if (Math.abs(robot.tankDriveSubsystem.navX.getPitch()) > rumbleDegreeMin) {
@@ -73,23 +85,7 @@ public class TelopDriveCommand extends CommandBase {
 
     // Turret Pivot control code
     if (robot.turretPivotSubsystem != null) {
-      if(robot.turretController.getLeftTriggerAxis() > 0.0) {
-        robot.turretPivotSubsystem.turnLeft(robot.turretController.getLeftTriggerAxis());
-      } else if(robot.turretController.getRightTriggerAxis() > 0.0) {
-        robot.turretPivotSubsystem.turnRight(robot.turretController.getRightTriggerAxis());
-      } else {
-        robot.turretPivotSubsystem.stopTurning();
-      }
-
-      if(robot.turretController.getPOV() == 0){
-        robot.turretPivotSubsystem.turn0();
-      } else if (robot.turretController.getPOV() == 90){
-        robot.turretPivotSubsystem.turn90();
-      } else if (robot.turretController.getPOV() == 180){
-        robot.turretPivotSubsystem.turn180();
-      } else if (robot.turretController.getPOV() == 270){
-        robot.turretPivotSubsystem.turn270();
-      }
+      robot.turretPivotSubsystem.turn(MathUtil.applyDeadband(robot.turretController.getLeftX()*0.75, 0.1));
     }
     
     // Turret Arm control code
@@ -111,20 +107,13 @@ public class TelopDriveCommand extends CommandBase {
       //     robot.turretArmSubsystem.stopMoving();
       //   }
       // }
-      if(robot.turretController.getRightBumper()){
-        robot.turretArmSubsystem.moveUp();
-      } else if (robot.turretController.getLeftBumper()){
-        robot.turretArmSubsystem.moveDown();
-      }else {
-        robot.turretArmSubsystem.stopMoving();
-        robot.turretArmSubsystem.lock();
-      }
+      robot.turretArmSubsystem.move(MathUtil.applyDeadband(robot.turretController.getLeftY()*0.75, 0.1));
     }
 
     if (robot.turretClawSubsystem != null) {
-      if (robot.turretController.getBButton()) {
+      if (robot.turretController.getLeftBumper()) {
         robot.turretClawSubsystem.closeClaw();
-      } else if (robot.turretController.getAButton()) {
+      } else if (robot.turretController.getRightBumper()) {
         robot.turretClawSubsystem.openClaw();
       } else {
         robot.turretClawSubsystem.stopClaw();

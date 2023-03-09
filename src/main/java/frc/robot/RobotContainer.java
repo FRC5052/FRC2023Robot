@@ -16,6 +16,8 @@ import edu.wpi.first.wpilibj.DutyCycleEncoder;
 import edu.wpi.first.wpilibj.Encoder;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.XboxController;
+import frc.robot.commands.AutonCommand;
+import frc.robot.commands.SideAutonCommand;
 import frc.robot.commands.TelopDriveCommand;
 import frc.robot.motor.MotorGroup;
 import frc.robot.subsystems.TankDriveSubsystem;
@@ -38,6 +40,8 @@ public class RobotContainer {
   public final XboxController turretController;
 
   public final TelopDriveCommand telopDriveCommand;
+  public final AutonCommand autonCommand;
+  public final SideAutonCommand sideAutonCommand;
 
   public final TankDriveSubsystem tankDriveSubsystem;
   public final TurretArmSubsystem turretArmSubsystem;
@@ -62,25 +66,29 @@ public class RobotContainer {
       new AHRS()
     );
 
-    // this.turretArmSubsystem = null;
-    this.turretArmSubsystem = new TurretArmSubsystem(
-      new CANSparkMax(Constants.armMotorID, MotorType.kBrushless), //new CANSparkMax(Constants.armMotorID, MotorType.kBrushless),
-      new DigitalInput(Constants.armLimSwitchPort)
-    );
+    this.turretArmSubsystem = null;
+    // this.turretArmSubsystem = new TurretArmSubsystem(
+    //   new CANSparkMax(Constants.armMotorID, MotorType.kBrushless), //new CANSparkMax(Constants.armMotorID, MotorType.kBrushless),
+    //   new DigitalInput(Constants.armLimSwitchPort)
+    // );
 
-    // this.turretPivotSubsystem = null;
-    this.turretPivotSubsystem = new TurretPivotSubsystem(
-      new CANSparkMax(Constants.pivotMotorID, MotorType.kBrushless)
-    );
+    this.turretPivotSubsystem = null;
+    // this.turretPivotSubsystem = new TurretPivotSubsystem(
+    //   new CANSparkMax(Constants.pivotMotorID, MotorType.kBrushless)
+    // );
 
-    // this.turretClawSubsystem = null;
-    this.turretClawSubsystem = new TurretClawSubsystem(
-      new MotorGroup(Constants.clawLeaderID, Constants.clawFollowerID)
-    );
+    this.turretClawSubsystem = null;
+    // this.turretClawSubsystem = new TurretClawSubsystem(
+    //   new MotorGroup(Constants.clawLeaderID, Constants.clawFollowerID)
+    // );
 
     this.telopDriveCommand = new TelopDriveCommand(
       new PIDController(0.6, 0.5, 0.0) // Input PID
     );
+
+    this.autonCommand = new AutonCommand();
+    this.sideAutonCommand = new SideAutonCommand();
+
 
     // Configure the button bindings
     this.configureButtonBindings();
@@ -102,7 +110,7 @@ public class RobotContainer {
    * @return the command to run in autonomous
    */
   public Command getAutonomousCommand() {
-    return null;
+    return autonCommand;
   }
 
   public Command getTeleopCommand() {

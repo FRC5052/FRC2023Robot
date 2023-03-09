@@ -10,19 +10,22 @@ import com.revrobotics.CANSparkMax.IdleMode;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.motor.MotorGroup;
+import static frc.Util.*;
 
 public class TankDriveSubsystem extends SubsystemBase {
+  private static final double whiteWheelDiameter = inchesToMeters(6.0); 
   public final MotorGroup leftWheels, rightWheels;
   public final PIDController pidController;
   public final AHRS navX;
   private final double initialHeading;
   public double leftSpeed = 0.0, rightSpeed = 0.0;
+  private IdleMode idleMode;
+
   /** Creates a new TankDriveSubsystem. */
   public TankDriveSubsystem(MotorGroup leftWheels, MotorGroup rightWheels, PIDController pidController, AHRS navX) {
       this.leftWheels = leftWheels;
       this.rightWheels = rightWheels;
-      this.leftWheels.setIdleMode(IdleMode.kBrake);
-      this.rightWheels.setIdleMode(IdleMode.kBrake);
+      this.idleMode = null;
       this.leftWheels.setInverted(true);
       this.pidController = pidController;
       this.navX = navX;
@@ -35,8 +38,16 @@ public class TankDriveSubsystem extends SubsystemBase {
       this.rightSpeed = right;
   }
 
+  public void setIdleMode(IdleMode mode) {
+      this.idleMode = mode;
+  }
+
   @Override
   public void periodic() {
+      if (this.idleMode != null) {
+        this.leftWheels.setIdleMode(this.idleMode);
+        this.rightWheels.setIdleMode(this.idleMode);
+      }
       this.smartPID(this.leftWheels, this.leftSpeed);
       this.smartPID(this.rightWheels, this.rightSpeed);
       // this.leftWheels.set(leftSpeed);
@@ -45,10 +56,10 @@ public class TankDriveSubsystem extends SubsystemBase {
 
   private void smartPID(MotorGroup motorGroup, double setPoint) {
     if (!shouldBrake(boolNegate(motorGroup.get(), !motorGroup.leader.getInverted()), setPoint)) {
-        motorGroup.setIdleMode(IdleMode.kBrake);
+        if (this.idleMode == null) motorGroup.setIdleMode(IdleMode.kBrake);
         motorGroup.set(setPoint);
     } else {
-        motorGroup.setIdleMode(IdleMode.kCoast);
+        if (this.idleMode == null) motorGroup.setIdleMode(IdleMode.kCoast);
         motorGroup.set(this.pidController.calculate(motorGroup.get(), setPoint));
     }
   }
