@@ -9,13 +9,12 @@ import static frc.robot.RobotContainer.robot;
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.CANSparkMax.IdleMode;
 
-public class AutonCommand extends CommandBase {
-    private long ticks;
+public class AutonCommand extends TimedCommand {
     private boolean onRamp;
 
     private RelativeEncoder rEncoder;
     private RelativeEncoder lEncoder;
-    private double numberOfMotorRevolutionsNeeded = 90.0;
+    private double numberOfMotorRevolutionsNeeded = 80.0;
     private double feetPerMotorRevolution = 0.16095;
     private double wheelTurnPerMotorTurn = 0.10247;
     
@@ -24,13 +23,9 @@ public class AutonCommand extends CommandBase {
         lEncoder = robot.tankDriveSubsystem.leftWheels.leader.getEncoder();
     }
 
-    private double getSeconds() {
-        return ((double)this.ticks)*TimedRobot.kDefaultPeriod;
-    }
-
     @Override
     public void initialize() {
-        this.ticks = 0;
+        super.initialize();
         this.onRamp = false;
 
         rEncoder.setPosition(0.0);
@@ -51,28 +46,41 @@ public class AutonCommand extends CommandBase {
         //     // delay
 // }
 
+
+        
         if (!this.onRamp) {
-            if (Math.abs(robot.tankDriveSubsystem.navX.getPitch()) > 2.0) {
-                this.onRamp = true;
-            } else {
-                double motorRevolutionAverage = (Math.abs(rEncoder.getPosition()) + Math.abs(lEncoder.getPosition())) / 2;
-                System.out.printf("R: %f, L: %f\n", rEncoder.getPosition(), lEncoder.getPosition());
-                if(motorRevolutionAverage < numberOfMotorRevolutionsNeeded){
-                    robot.tankDriveSubsystem.setSpeeds(0.5, 0.5);
-                }
-                else {
-                    robot.tankDriveSubsystem.setSpeeds(0.0, 0.0);
+            if(this.getSeconds() < 1.5){
+                robot.turretClawSubsystem.closeClaw();
+                robot.turretClawSubsystem.setIntake();
+            }
+            else {
+                robot.turretClawSubsystem.openClaw();
+                robot.turretClawSubsystem.setHome();
+                if (Math.abs(robot.tankDriveSubsystem.navX.getPitch()) > 2.0) {
+                    this.onRamp = true;
+                } else {
+                    double motorRevolutionAverage = (Math.abs(rEncoder.getPosition()) + Math.abs(lEncoder.getPosition())) / 2;
+                    System.out.printf("R: %f, L: %f\n", rEncoder.getPosition(), lEncoder.getPosition());
+                    if(motorRevolutionAverage < numberOfMotorRevolutionsNeeded){
+                        robot.tankDriveSubsystem.setSpeeds(-0.85, -0.85);
+                    }
+                    else {
+                        robot.tankDriveSubsystem.setSpeeds(0.0, 0.0);
+                        robot.tankDriveSubsystem.setIdleMode(IdleMode.kBrake);
+                    }
                 }
             }
+
         } else {
             if (this.getSeconds() < 15.0){    
                 robot.tankDriveSubsystem.setIdleMode(IdleMode.kBrake);
-                double value = MathUtil.applyDeadband(-robot.tankDriveSubsystem.navX.getPitch()/90.0, 0.05);
+                double value = MathUtil.applyDeadband(-robot.tankDriveSubsystem.navX.getPitch()/110.0, 0.05);
                 robot.tankDriveSubsystem.setSpeeds(value, value);
             } else {
                 robot.tankDriveSubsystem.setSpeeds(0.0, 0.0);
+                robot.tankDriveSubsystem.setIdleMode(IdleMode.kBrake);
             }
         }
-        this.ticks++;
+        super.execute();
     }
 }

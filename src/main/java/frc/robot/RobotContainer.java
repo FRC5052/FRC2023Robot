@@ -17,12 +17,16 @@ import edu.wpi.first.wpilibj.Encoder;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.XboxController;
 import frc.robot.commands.AutonCommand;
+import frc.robot.commands.PassAndTossCommand;
 import frc.robot.commands.SideAutonCommand;
 import frc.robot.commands.TelopDriveCommand;
 import frc.robot.motor.MotorGroup;
+import frc.robot.subsystems.LimelightSubsystem;
+import frc.robot.subsystems.MacroSubsystem;
+import frc.robot.subsystems.ShooterSubsystem;
 import frc.robot.subsystems.TankDriveSubsystem;
 import frc.robot.subsystems.TurretArmSubsystem;
-import frc.robot.subsystems.TurretClawSubsystem;
+import frc.robot.subsystems.FlipperClawSubsystem;
 import frc.robot.subsystems.TurretPivotSubsystem;
 import edu.wpi.first.wpilibj2.command.Command;
 
@@ -41,12 +45,14 @@ public class RobotContainer {
 
   public final TelopDriveCommand telopDriveCommand;
   public final AutonCommand autonCommand;
-  public final SideAutonCommand sideAutonCommand;
 
   public final TankDriveSubsystem tankDriveSubsystem;
   public final TurretArmSubsystem turretArmSubsystem;
   public final TurretPivotSubsystem turretPivotSubsystem;
-  public final TurretClawSubsystem turretClawSubsystem;
+  public final FlipperClawSubsystem turretClawSubsystem;
+  public final LimelightSubsystem limelightSubsystem;
+  public final ShooterSubsystem shooterSubsystem;
+  public final MacroSubsystem macroSubsystem;
 
   public static RobotContainer getRobot() {
     return RobotContainer.robot;
@@ -55,8 +61,8 @@ public class RobotContainer {
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
     if (RobotContainer.robot == null) RobotContainer.robot = this;
-    this.driveController = new XboxController(0);
-    this.turretController = new XboxController(1);
+    this.driveController = new XboxController(1);
+    this.turretController = new XboxController(0);
 
     // this.tankDriveSubsystem = null;
     this.tankDriveSubsystem = new TankDriveSubsystem(
@@ -65,6 +71,8 @@ public class RobotContainer {
       new PIDController(0.6, 0.5, 0.0), // Output PID
       new AHRS()
     );
+    
+    this.macroSubsystem = new MacroSubsystem();
 
     this.turretArmSubsystem = null;
     // this.turretArmSubsystem = new TurretArmSubsystem(
@@ -77,17 +85,25 @@ public class RobotContainer {
     //   new CANSparkMax(Constants.pivotMotorID, MotorType.kBrushless)
     // );
 
-    this.turretClawSubsystem = null;
-    // this.turretClawSubsystem = new TurretClawSubsystem(
-    //   new MotorGroup(Constants.clawLeaderID, Constants.clawFollowerID)
-    // );
+    // this.turretClawSubsystem = null;
+    this.turretClawSubsystem = new FlipperClawSubsystem(
+      new MotorGroup(Constants.clawLeaderID, Constants.clawFollowerID), new CANSparkMax(Constants.clawFlipMotorID, MotorType.kBrushless)
+    );
+
+    this.limelightSubsystem = new LimelightSubsystem();
+
+    // this.shooterSubsystem = null;
+    this.shooterSubsystem = new ShooterSubsystem(
+      new CANSparkMax(Constants.leftShooterID, MotorType.kBrushless), 
+      new CANSparkMax(Constants.rightShooterID, MotorType.kBrushless),
+      new CANSparkMax(Constants.tosserID, MotorType.kBrushless)
+    );
 
     this.telopDriveCommand = new TelopDriveCommand(
       new PIDController(0.6, 0.5, 0.0) // Input PID
     );
 
     this.autonCommand = new AutonCommand();
-    this.sideAutonCommand = new SideAutonCommand();
 
 
     // Configure the button bindings
@@ -116,4 +132,6 @@ public class RobotContainer {
   public Command getTeleopCommand() {
     return this.telopDriveCommand;
   }
+
 }
+
