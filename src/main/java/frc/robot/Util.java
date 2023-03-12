@@ -1,4 +1,6 @@
-package frc;
+package frc.robot;
+
+import edu.wpi.first.wpilibj.TimedRobot;
 
 public class Util {
     public static double inchesToMeters(double inches){
@@ -10,11 +12,15 @@ public class Util {
     }
 
     // sign ? -x : x
-    private static double boolNegate(double x, boolean sign) {
+    public static double boolNegate(double x, boolean sign) {
         return sign ? -x : x;
     }
 
-    private static long boolNegate(long x, boolean sign) {
+    public static long boolNegate(long x, boolean sign) {
         return sign ? -x : x;
+    }
+
+    public static double getSeconds(int ticks) {
+        return ((double)ticks)*TimedRobot.kDefaultPeriod;
     }
 }

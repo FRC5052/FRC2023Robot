@@ -4,13 +4,14 @@
 
 package frc.robot.subsystems;
 
+import static frc.robot.Util.*;
+
 import com.kauailabs.navx.frc.AHRS;
 import com.revrobotics.CANSparkMax.IdleMode;
 
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.motor.MotorGroup;
-import static frc.Util.*;
 
 public class TankDriveSubsystem extends SubsystemBase {
   private static final double whiteWheelDiameter = inchesToMeters(6.0); 

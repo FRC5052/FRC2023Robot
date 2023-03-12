@@ -29,8 +29,13 @@ public final class Constants {
 
     public static final int pivotMotorID = 5;
 
-    public static final int clawLeaderID = 7;
-    public static final int clawFollowerID = 8;
+    public static final int clawLeaderID = 8;
+    public static final int clawFollowerID = 7;
+    public static final int clawFlipMotorID = 5;
+
+    public static final int leftShooterID = 10;
+    public static final int rightShooterID = 9;
+    public static final int tosserID = 6;
 
 
 // stuff below is constants for Auton dont touch unless u know what ur doing 
